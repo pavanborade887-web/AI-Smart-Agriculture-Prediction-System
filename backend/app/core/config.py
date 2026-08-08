@@ -1,10 +1,11 @@
 from functools import lru_cache
+from pathlib import Path
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(env_file=Path(__file__).resolve().parents[3] / ".env", env_file_encoding="utf-8", extra="ignore")
     environment: str = "development"
     database_url: str = "sqlite:///./agri.db"
     jwt_secret_key: str = "development-only-secret-change-before-deploying"
