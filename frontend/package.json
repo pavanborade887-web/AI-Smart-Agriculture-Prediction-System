@@ -1,0 +1,29 @@
+{
+  "name": "agri-smart-web",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "latest",
+    "axios": "latest",
+    "framer-motion": "latest",
+    "plotly.js-dist-min": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-icons": "latest",
+    "react-plotly.js": "latest",
+    "react-router-dom": "^6.30.4",
+    "vite": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}
