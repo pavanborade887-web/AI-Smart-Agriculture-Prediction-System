@@ -65,6 +65,30 @@ def market_prediction(data: dict) -> dict:
 
 def local_agriculture_answer(question: str) -> str:
     q = question.lower()
+    if "irrig" in q or "water" in q:
+        return "Check root-zone soil moisture before irrigating. If moisture is low and meaningful rain is not forecast, irrigate early morning or evening. Use mulch to reduce evaporation and avoid standing water around roots. The Smart Irrigation tool can calculate the water amount from your field values."
+    if "fertili" in q or "npk" in q or "urea" in q:
+        return "Base fertilizer on a recent soil test. Apply nitrogen in split doses, place phosphorus near the root zone at planting, and use potassium where soil levels are low. Add mature compost or farmyard manure to improve organic carbon and nutrient retention."
+    if "disease" in q or "leaf" in q or "pest" in q:
+        return "First identify the crop and visible symptom, then isolate badly affected plants and avoid working with wet leaves. Use clean tools, improve airflow, and upload a clear leaf image in Disease Detection for a visible-stress assessment before choosing treatment."
+    if "weather" in q or "rain" in q or "temperature" in q:
+        return "Use the Weather Analysis tool for current conditions and forecast. Avoid spraying in strong wind or before rain, postpone irrigation when useful rainfall is expected, and increase disease scouting during prolonged high humidity."
+    if "soil" in q or "ph" in q or "organic carbon" in q:
+        return "A productive soil usually has balanced NPK, adequate organic carbon, good drainage, and crop-appropriate pH. Add compost and crop residue where organic carbon is low, and use a laboratory soil test before applying lime or sulphur to correct pH."
+    if "yield" in q or "production" in q:
+        return "Yield depends on crop variety, area, historical yield, weather, soil, and nutrient management. Use the Yield Prediction tool with your actual field values for an estimated production, income range, and confidence score."
+    if "market" in q or "price" in q or "sell" in q:
+        return "Track verified local mandi prices and avoid selling solely on a single-day movement. Enter recent prices in Market Price Prediction to see the trend and the estimated stronger selling window."
+    if "tomato" in q:
+        return "For tomato cultivation, use well-drained soil with pH 6.0–6.8, transplant healthy seedlings 45–60 cm apart, and provide 6–8 hours of sun. Keep soil evenly moist, mulch to reduce water loss, and apply compost before planting. Inspect leaves twice weekly for whiteflies, leaf spots, and curling."
+    if "rice" in q or "paddy" in q:
+        return "For rice, use a field with reliable water management, transplant vigorous seedlings at the locally recommended spacing, and split nitrogen into multiple applications rather than applying it all at once. Maintain water according to crop stage and drain before harvest so the field can dry safely."
+    if "wheat" in q:
+        return "For wheat, sow into a fine, well-drained seedbed during the locally recommended season. Use a soil-test-based fertilizer plan, avoid excess nitrogen early in the season, irrigate at critical crown-root, tillering, flowering, and grain-filling stages, and monitor for rust symptoms."
+    if "maize" in q or "corn" in q:
+        return "For maize, plant in warm soil with good drainage and adequate spacing for sunlight. Split nitrogen applications around early growth and knee-high stages, remove weeds early, and irrigate during tasseling and grain filling if rainfall is insufficient."
+    if "make" in q or "grow" in q or "cultivat" in q or "plant" in q:
+        return "Tell me the crop name and your location, soil type, irrigation availability, and season. I will suggest spacing, soil preparation, fertilizer timing, irrigation, and disease-prevention steps for that crop."
     if "irrig" in q: return "Irrigate based on measured root-zone moisture, forecast rainfall, and crop stage. Water early morning or evening; avoid irrigation before meaningful forecast rain."
     if "fertili" in q or "npk" in q: return "Use a soil test to match NPK applications to the crop and field. Split nitrogen applications to reduce losses, and add compost to support soil organic carbon."
     if "disease" in q or "leaf" in q: return "Isolate affected plants, remove severely infected leaves hygienically, and confirm the disease before applying treatment. Avoid spraying in wind or heat."

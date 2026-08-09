@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     openweather_api_key: str | None = None
     openai_api_key: str | None = None
     openai_model: str = "gpt-4.1-mini"
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-2.0-flash"
 
     @field_validator("jwt_secret_key")
     @classmethod
