@@ -8,6 +8,8 @@ __pycache__/
 .venv/
 node_modules/
 dist/
+.pip-cache/
+.npm-cache/
 coverage/
 *.sqlite3
 uploads/

@@ -1,8 +1,47 @@
-import axios from 'axios'
+import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import type { AuthResponse, User } from './types'
 
 const api = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000/api/v1' })
 api.interceptors.request.use((config) => { const token = localStorage.getItem('access_token'); if (token) config.headers.Authorization = `Bearer ${token}`; return config })
+
+type RetryConfig = InternalAxiosRequestConfig & { _retriedAfterRefresh?: boolean }
+let refreshInFlight: Promise<string> | null = null
+api.interceptors.response.use((response) => response, async (error: AxiosError) => {
+  const request = error.config as RetryConfig | undefined
+  const url = request?.url ?? ''
+  if (error.response?.status !== 401 || !request || request._retriedAfterRefresh || /\/auth\/(login|register|refresh|logout)/.test(url)) {
+    return Promise.reject(error)
+  }
+
+  const refreshToken = localStorage.getItem('refresh_token')
+  if (!refreshToken) {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('user')
+    window.location.assign('/login')
+    return Promise.reject(error)
+  }
+
+  try {
+    refreshInFlight ??= api.post<AuthResponse>('/auth/refresh', { refresh_token: refreshToken })
+      .then(({ data }) => {
+        localStorage.setItem('access_token', data.access_token)
+        localStorage.setItem('refresh_token', data.refresh_token)
+        localStorage.setItem('user', JSON.stringify(data.user))
+        return data.access_token
+      })
+      .finally(() => { refreshInFlight = null })
+    const token = await refreshInFlight
+    request._retriedAfterRefresh = true
+    request.headers.Authorization = `Bearer ${token}`
+    return api(request)
+  } catch (refreshError) {
+    localStorage.removeItem('access_token')
+    localStorage.removeItem('refresh_token')
+    localStorage.removeItem('user')
+    window.location.assign('/login')
+    return Promise.reject(refreshError)
+  }
+})
 export const authApi = {
   register: (full_name: string, email: string, password: string) => api.post<AuthResponse>('/auth/register', { full_name, email, password }),
   login: (email: string, password: string) => api.post<AuthResponse>('/auth/login', { email, password }),
@@ -18,7 +57,9 @@ export type DashboardSummary = {
 }
 export const dashboardApi = { summary: () => api.get<DashboardSummary>('/dashboard/summary') }
 export const agricultureApi = {
-  crop: (data: unknown) => api.post('/crop-predictions', data), fertilizer: (data: unknown) => api.post('/fertilizer-recommendations', data), yield: (data: unknown) => api.post('/yield-predictions', data), soil: (data: unknown) => api.post('/soil-health', data), irrigation: (data: unknown) => api.post('/irrigation-recommendations', data), market: (data: unknown) => api.post('/market-price-predictions', data), weather: (data: unknown) => api.post('/weather', data), chat: (message: string) => api.post('/chat', { message }), history: () => api.get('/chat/history'), report: (type: string) => api.post(`/reports/${type}`), adminUsers: () => api.get('/admin/users'), adminAnalytics: () => api.get('/admin/analytics'),
+  crop: (data: unknown) => api.post('/crop-predictions', data), fertilizer: (data: unknown) => api.post('/fertilizer-recommendations', data), yield: (data: unknown) => api.post('/yield-predictions', data), soil: (data: unknown) => api.post('/soil-health', data), irrigation: (data: unknown) => api.post('/irrigation-recommendations', data), market: (data: unknown) => api.post('/market-price-predictions', data), weather: (data: unknown) => api.post('/weather', data), chat: (message: string, language: string = 'en') => api.post('/chat', { message, language }),
+  uploadChat: (message: string, file: File, language: string = 'en') => { const body = new FormData(); body.append('message', message); body.append('file', file); body.append('language', language); return api.post('/chat/upload', body) },
+  history: () => api.get('/chat/history'), report: (type: string) => api.post(`/reports/${type}`), adminUsers: () => api.get('/admin/users'), adminAnalytics: () => api.get('/admin/analytics'),
   disease: (file: File, crop: string) => { const body = new FormData(); body.append('image', file); if (crop) body.append('crop', crop); return api.post('/disease-detections', body) },
   dataset: (name: string, domain: string, file: File) => { const body = new FormData(); body.append('name', name); body.append('domain', domain); body.append('file', file); return api.post('/admin/datasets', body) },
   train: (id: number, target: string) => api.post(`/admin/datasets/${id}/train?target_column=${encodeURIComponent(target)}`),

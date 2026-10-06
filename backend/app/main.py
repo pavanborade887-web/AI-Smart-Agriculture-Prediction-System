@@ -22,7 +22,10 @@ async def lifespan(_: FastAPI):
     yield
 
 app = FastAPI(title="AI Smart Agriculture API", version="1.0.0", description="Farm intelligence and prediction platform", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=[settings.frontend_origin], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+cors_origins = [settings.frontend_origin]
+if settings.environment == "development":
+    cors_origins.extend(["http://localhost:5173", "http://127.0.0.1:5173"])
+app.add_middleware(CORSMiddleware, allow_origins=list(dict.fromkeys(cors_origins)), allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(dashboard_router, prefix="/api/v1")
 app.include_router(agriculture_router, prefix="/api/v1")

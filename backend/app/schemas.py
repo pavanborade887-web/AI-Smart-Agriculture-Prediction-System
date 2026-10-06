@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from pydantic import BaseModel, EmailStr, Field
 from app.models import Role
 
@@ -49,7 +50,7 @@ class CropInput(BaseModel):
     nitrogen: float = Field(ge=0, le=300); phosphorus: float = Field(ge=0, le=200); potassium: float = Field(ge=0, le=300)
     temperature: float = Field(ge=-10, le=60); humidity: float = Field(ge=0, le=100); rainfall: float = Field(ge=0, le=2000); ph: float = Field(ge=0, le=14)
 class FertilizerInput(BaseModel):
-    crop: str; nitrogen: float = Field(ge=0, le=300); phosphorus: float = Field(ge=0, le=200); potassium: float = Field(ge=0, le=300); ph: float = Field(ge=0, le=14); moisture: float = Field(ge=0, le=100)
+    crop: str = Field(min_length=2, max_length=80); nitrogen: float = Field(ge=0, le=300); phosphorus: float = Field(ge=0, le=200); potassium: float = Field(ge=0, le=300); ph: float = Field(ge=0, le=14); moisture: float = Field(ge=0, le=100)
 class YieldInput(BaseModel):
     crop: str; area_hectares: float = Field(gt=0, le=100000); rainfall: float = Field(ge=0, le=3000); temperature: float = Field(ge=-10, le=60); fertilizer_kg: float = Field(ge=0, le=2000); soil_type: str; historical_yield_tonnes_per_hectare: float = Field(gt=0, le=100)
 class SoilInput(BaseModel):
@@ -62,3 +63,4 @@ class WeatherRequest(BaseModel):
     city: str = Field(min_length=2, max_length=100); country_code: str = Field(default="IN", min_length=2, max_length=2)
 class ChatRequest(BaseModel):
     message: str = Field(min_length=2, max_length=3000)
+    language: Literal["en", "mr"] = "en"

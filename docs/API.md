@@ -13,6 +13,7 @@ All farm endpoints use `Authorization: Bearer <access token>`.
 | Irrigation | `POST /api/v1/irrigation-recommendations` |
 | Market forecast | `POST /api/v1/market-price-predictions` |
 | Chat | `POST /api/v1/chat` |
+| Chat document upload | `POST /api/v1/chat/upload` multipart fields `file` and optional `message`; supports TXT, MD, CSV, PDF, DOCX, XLSX up to 10 MB |
 | Report export | `POST /api/v1/reports/{pdf|xlsx|csv}` |
 | Admin users/analytics | `GET /api/v1/admin/users`, `GET /api/v1/admin/analytics` |
 
